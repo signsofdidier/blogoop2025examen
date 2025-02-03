@@ -4,6 +4,12 @@ ob_start();
 require_once("includes/sidebar.php");
 require_once("includes/content-top.php");
 
+//als user GEEN admin is redirect naar index
+if (!User::isAdmin()) {
+    header("location:index.php");
+    exit();
+}
+
 //// Controleer of er een melding in de sessie staat
 $the_message = "";
 if (isset($_SESSION['the_message'])) {
@@ -11,12 +17,14 @@ if (isset($_SESSION['the_message'])) {
     unset($_SESSION['the_message']); // Verwijder de melding na ophalen
 }
 
+$roles = Role::find_all_roles();
 if (isset($_POST['submit'])) {
     $user = new User();
     $user->username = trim($_POST['username']);
     $user->first_name = trim($_POST['first_name']);
     $user->last_name = trim($_POST['last_name']);
     $user->password = trim($_POST['password']);
+    $user->role_id = trim($_POST['role_id']);
     $user->save();
 
     if (!empty($user)) {
@@ -32,6 +40,7 @@ if (isset($_POST['submit'])) {
     header("Location: " . $_SERVER['PHP_SELF']);
     exit(); // Stop verdere uitvoering van het script
 }
+
 ?>
 
 <?php if (!empty($the_message)): ?>
@@ -97,6 +106,22 @@ if (isset($_POST['submit'])) {
 								</div>
 							</div>
 						</div>
+
+                        <div class="col-12">
+                            <div class="form-group has-icon-left">
+                                <label for="role-id-icon">Role</label>
+                                <div class="position-relative">
+                                    <select class="form-control" id="role-id-icon" name="role_id">
+                                        <?php foreach ($roles as $role): ?>
+                                            <option value="<?php echo $role->id; ?>"><?php echo $role->name; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <div class="form-control-icon">
+                                        <i class="bi bi-person-badge"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
 						<div class="col-12 d-flex justify-content-end">
 							<input type="submit" name="submit" class="btn btn-primary me-1 mb-1" value="Submit">

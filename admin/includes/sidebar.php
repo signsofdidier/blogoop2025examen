@@ -51,8 +51,8 @@
 
 
                 </li>
-	            <li
-			            class="sidebar-item  has-sub">
+                <?php if (User::isAdmin()): ?>
+	            <li class="sidebar-item has-sub">
 		            <a href="#" class='sidebar-link'>
 			            <i class="bi bi-people-fill"></i>
 			            <span>Users</span>
@@ -67,6 +67,7 @@
 			            </li>
 		            </ul>
 	            </li>
+
 	            <li
 			            class="sidebar-item  has-sub">
 		            <a href="#" class='sidebar-link'>
@@ -83,6 +84,7 @@
 			            </li>
 		            </ul>
 	            </li>
+                <?php endif; ?>
 	            <li
 			            class="sidebar-item  has-sub">
 		            <a href="#" class='sidebar-link'>
@@ -94,11 +96,16 @@
 			            <li class="submenu-item  ">
 				            <a href="blogs.php" class="submenu-link">All blogs</a>
 			            </li>
+
+                        <?php if (User::isAdmin()): ?>
 			            <li class="submenu-item  ">
 				            <a href="add_blog.php" class="submenu-link">Add Blog</a>
 			            </li>
+                        <?php endif; ?>
 		            </ul>
 	            </li>
+
+                <?php if (User::isAdmin()): ?>
                 <li
                         class="sidebar-item  has-sub">
                     <a href="#" class='sidebar-link'>
@@ -737,7 +744,7 @@
 
 
                 </li>
-
+                <?php endif; ?>
             </ul>
         </div>
     </div>

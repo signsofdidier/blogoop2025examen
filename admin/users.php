@@ -3,11 +3,30 @@ require_once("includes/header.php");
 require_once("includes/sidebar.php");
 require_once("includes/content-top2.php");
 
+//als user GEEN admin is redirect naar index
+if (!User::isAdmin()) {
+    header("location:index.php");
+    exit();
+}
+
 if (isset($_GET['delete'])) {
-    //$_GET['delete'] = id
+    if (!User::isAdmin()) {
+        header("location:index.php");
+        exit();
+    }
+
     $user = User::find_by_id($_GET['delete']);
     if ($user) {
         $user->soft_delete();
+        header("location:users.php");
+        exit;
+    }
+}
+
+if (isset($_GET['restore'])) {
+    $user = User::find_by_id($_GET['restore']);
+    if ($user) {
+        $user->restore();
         header("location:users.php") .
         exit;
     } else {
@@ -52,6 +71,7 @@ if (isset($_GET['delete'])) {
 							<th>Familienaam</th>
 							<th>Created_at</th>
 							<th>Deleted at</th>
+							<th>Role</th>
 							<th>Actions</th>
 						</tr>
 						</thead>
@@ -68,14 +88,25 @@ if (isset($_GET['delete'])) {
 								<td><?= $user->last_name; ?></td>
 								<td><?= $user->created_at; ?></td>
 								<td><?= $user->deleted_at; ?></td>
-								<td class="d-flex justify-content-around">
-									<a href="users.php?delete=<?= $user->id; ?>"
-									   onclick="return confirm('Weet je zeker dat je deze gebruiker wil verwijderen?')">
-										<i class="bi bi-trash text-danger"></i>
-									</a>
-									<a href="edit_user.php?id=<?= $user->id; ?>">
-										<i class="bi bi-eye text-primary"></i>
-									</a>
+								<td>
+                                    <?php if ($user->role_id == 1) : ?>
+                                        <span class="badge bg-primary">Admin</span>
+                                    <?php else: ?>
+                                        <span>User</span>
+                                    <?php endif; ?></td>
+								<td>
+                                    <div class="d-flex justify-content-around">
+                                        <?php if (User::isAdmin()): ?>
+                                            <a href="users.php?delete=<?= $user->id; ?>"
+                                               onclick="return confirm('Weet je zeker dat je deze gebruiker wil verwijderen?')">
+                                                <i class="bi bi-trash text-danger"></i>
+                                            </a>
+
+                                        <a href="edit_user.php?id=<?= $user->id; ?>">
+                                            <i class="bi bi-eye text-primary"></i>
+                                        </a>
+                                        <?php endif; ?>
+                                    </div>
 								</td>
 							</tr>
 							<?php endif; ?>
@@ -94,6 +125,7 @@ if (isset($_GET['delete'])) {
 							<th>Familienaam</th>
 							<th>Created_at</th>
 							<th>Deleted at</th>
+							<th>Role</th>
 							<th>Actions</th>
 						</tr>
 						</thead>
@@ -103,22 +135,34 @@ if (isset($_GET['delete'])) {
                             <?php if($user->deleted_at !== '0000-00-00 00:00:00'): ?>
 							<tr>
 								<td><?= $user->id; ?></td>
-								<td><span><img height="40" width="40" class="avatar me-3"
+								<td>
+                                    <span>
+                                        <img height="40" width="40" class="avatar me-3"
 								               src="../admin/assets/static/images/faces/8.jpg"
-								               alt=""></span><?= $user->username; ?></td>
+								               alt=""></span><?= $user->username; ?>
+                                </td>
 								<td><?= $user->password; ?></td>
 								<td><?= $user->first_name; ?></td>
 								<td><?= $user->last_name; ?></td>
 								<td><?= $user->created_at; ?></td>
 								<td><?= $user->deleted_at; ?></td>
-								<td class="d-flex justify-content-around">
-									<a href="users.php?restore=<?= $user->id; ?>"
-									   onclick="return confirm('Weet je zeker dat je deze gebruiker wil herstellen?')">
-										<i class="bi bi-bootstrap-reboot text-warning"></i>
-									</a>
-									<a href="edit_user.php?id=<?= $user->id; ?>">
-										<i class="bi bi-eye text-primary"></i>
-									</a>
+                                <td>
+                                    <?php if ($user->role_id == 1) : ?>
+                                        <span class="badge bg-primary">Admin</span>
+                                    <?php else: ?>
+                                        <span>User</span>
+                                    <?php endif; ?>
+                                </td>
+								<td>
+                                    <div class="d-flex justify-content-around">
+                                        <a href="users.php?restore=<?= $user->id; ?>"
+                                           onclick="return confirm('Weet je zeker dat je deze gebruiker wil herstellen?')">
+                                            <i class="bi bi-bootstrap-reboot text-warning"></i>
+                                        </a>
+                                        <a href="edit_user.php?id=<?= $user->id; ?>">
+                                            <i class="bi bi-eye text-primary"></i>
+                                        </a>
+                                    </div>
 								</td>
 							</tr>
 							<?php endif; ?>

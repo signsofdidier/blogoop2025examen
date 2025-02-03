@@ -23,6 +23,7 @@ if (isset($_POST['submit'])) {
         $user->first_name = trim($_POST['first_name']);
         $user->last_name = trim($_POST['last_name']);
         $user->password = trim($_POST['password']);
+        $user->role_id = 2; //de standard role voor een register is user
         $user->create();
 
         $the_message = "New user: " . $user->username . " was added to the Database, click below to login!";

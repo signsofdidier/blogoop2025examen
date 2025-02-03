@@ -3,6 +3,12 @@ require_once("includes/header.php");
 require_once("includes/sidebar.php");
 require_once("includes/content-top.php");
 
+//als user GEEN admin is redirect naar index
+if (!User::isAdmin()) {
+    header("location:index.php");
+    exit();
+}
+
 //// Controleer of er een melding in de sessie staat
 //$the_message = "";
 //if (isset($_SESSION['the_message'])) {
@@ -31,20 +37,42 @@ require_once("includes/content-top.php");
 //    header("Location: " . $_SERVER['PHP_SELF']);
 //    exit(); // Stop verdere uitvoering van het script
 //}
+
+// Controleer of de ingelogde gebruiker een admin is
+if ($_SESSION['user_role'] != 1) { // 1 = admin rol
+    header("location:users.php");
+    exit();
+}
+
 if(empty($_GET['id'])){
 	header("location:users.php");
 }
 $user = User::find_by_id($_GET['id']);
 
-if(isset($_POST['updateuser'])){
-	if($user){
-		$user->username = $_POST['username'];
-		$user->first_name = $_POST['first_name'];
-		$user->last_name = $_POST['last_name'];
-		$user->save();
-		header("location:users.php");
-	}
+// Voeg hier de controle toe om te voorkomen dat gebruikers hun eigen rol wijzigen
+if ($user->id == $_SESSION['user_id']) { // Controleer of de gebruiker zijn eigen rol probeert te wijzigen
+    die("Je kunt je eigen rol niet wijzigen.");
 }
+
+$roles = Role::find_all_roles();
+if (isset($_POST['updateuser'])) {
+    if ($user) {
+        // Valideer de rol-ID
+        $role_id = $_POST['role_id'];
+        $valid_roles = array_column($roles, 'id'); // Haal alle geldige rol-ID's op
+        if (!in_array($role_id, $valid_roles)) {
+            die("Ongeldige rol geselecteerd.");
+        }
+
+        $user->username = $_POST['username'];
+        $user->first_name = $_POST['first_name'];
+        $user->last_name = $_POST['last_name'];
+        $user->role_id = $role_id;
+        $user->save();
+        header("location:users.php");
+    }
+}
+
 ?>
 
 <?php //if (!empty($the_message)): ?>
@@ -53,6 +81,9 @@ if(isset($_POST['updateuser'])){
 <!--		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
 <!--	</div>-->
 <?php //endif; ?>
+
+
+
 <div class="card">
 	<div class="card-header d-flex justify-content-between">
 		<h4 class="card-title">Edit User</h4>
@@ -102,6 +133,23 @@ if(isset($_POST['updateuser'])){
 								</div>
 							</div>
 						</div>
+                        <div class="col-12">
+                            <div class="form-group has-icon-left">
+                                <label for="role-id-icon">Role</label>
+                                <div class="position-relative">
+                                    <select class="form-control" id="role-id-icon" name="role_id">
+                                        <?php foreach ($roles as $role): ?>
+                                            <option value="<?php echo $role->id; ?>" <?php echo ($user->role_id == $role->id) ? 'selected' : ''; ?>>
+                                                <?php echo $role->name; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <div class="form-control-icon">
+                                        <i class="bi bi-person-badge"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 						<div class="col-12 d-flex justify-content-end">
 							<input type="submit" name="updateuser" class="btn btn-primary me-1 mb-1" value="Update">
 						</div>

@@ -1,4 +1,4 @@
-git a<?php
+<?php
 require_once("includes/header.php");
 if(!$session->is_signed_in()){
     header("location:login.php");

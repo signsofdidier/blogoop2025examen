@@ -142,6 +142,16 @@ class Db_object
         $params = [$escaped_id];
         $database->query($sql,$params);
     }
+
+    public function restore(){
+        global $database;
+        $table = static::$table_name;
+        $escaped_id = $database->escape_string($this->id);
+        $sql = "UPDATE $table SET deleted_at = '0000-00-00 00:00:00' WHERE id = ?";
+        $params = [$escaped_id];
+        $database->query($sql,$params);
+    }
+
     public function soft_delete(){
         global $database;
         $table = static::$table_name;
@@ -170,5 +180,10 @@ class Db_object
         $result = $database->query($sql);
         $row= $result->fetch_array();
         return array_shift($row);
+    }
+
+    public static function isAdmin() {
+        // checkt als de user is ingelogt en de admin rol heeft (role_id = 1)
+        return isset($_SESSION['user_role']) && $_SESSION['user_role'] == 1;
     }
 }

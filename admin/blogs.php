@@ -34,6 +34,7 @@ if (isset($_GET['delete'])) {
             </h5>
         </div>
         <div class="card-body">
+            <?php if (User::isAdmin()): ?>
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="active-tab" data-bs-toggle="tab"
@@ -48,6 +49,7 @@ if (isset($_GET['delete'])) {
                     </button>
                 </li>
             </ul>
+            <?php endif; ?>
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="active-tab-pane" role="tabpanel"
                      aria-labelledby="active-tab">
@@ -60,8 +62,10 @@ if (isset($_GET['delete'])) {
                             <th>description</th>
                             <th>Categories</th>
                             <th>Created_at</th>
+                            <?php if (User::isAdmin()): ?>
                             <th>Deleted at</th>
                             <th>Actions</th>
+                            <?php endif; ?>
                         </tr>
                         </thead>
                         <tbody>
@@ -104,8 +108,11 @@ if (isset($_GET['delete'])) {
 
 
                                     <td><?= $blog->created_at; ?></td>
+
+                                    <?php if (User::isAdmin()): ?>
                                     <td><?= $blog->deleted_at; ?></td>
                                     <td class="d-flex justify-content-around">
+
                                         <!-- Verwijderknop -->
                                         <a href="blogs.php?delete=<?= $blog->id; ?>"
                                            onclick="return confirm('Weet je zeker dat je deze gebruiker wil verwijderen?')">
@@ -116,12 +123,15 @@ if (isset($_GET['delete'])) {
                                             <i class="bi bi-eye text-primary"></i>
                                         </a>
                                     </td>
+                                    <?php endif; ?>
                                 </tr>
                             <?php endif; ?>
                         <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
+
+                <?php if (User::isAdmin()): ?>
                 <div class="tab-pane fade" id="inactive-tab-pane" role="tabpanel" aria-labelledby="inactive-tab">
                     <table class="table table-striped" id="table2">
                         <thead>
@@ -132,7 +142,9 @@ if (isset($_GET['delete'])) {
                             <th>description</th>
                             <th>Created_at</th>
                             <th>Deleted at</th>
+                            <?php if (User::isAdmin()): ?>
                             <th>Actions</th>
+                            <?php endif; ?>
                         </tr>
                         </thead>
                         <tbody>
@@ -161,6 +173,7 @@ if (isset($_GET['delete'])) {
                                     <td><?= $blog->description; ?></td>
                                     <td><?= $blog->created_at; ?></td>
                                     <td><?= $blog->deleted_at; ?></td>
+                                    <?php if (User::isAdmin()): ?>
                                     <td class="d-flex justify-content-around">
                                         <!-- Herstelknop -->
                                         <a href="blogs.php?restore=<?= $blog->id; ?>"
@@ -172,12 +185,14 @@ if (isset($_GET['delete'])) {
                                             <i class="bi bi-eye text-primary"></i>
                                         </a>
                                     </td>
+                                    <?php endif; ?>
                                 </tr>
                             <?php endif; ?>
                         <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

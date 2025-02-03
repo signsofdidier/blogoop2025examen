@@ -21,6 +21,7 @@ require_once("includes/content-top2.php");
 				                    <a href="<?= $photo->picture_path(); ?>" data-lightbox="gallery">
 					                    <img alt="<?= $photo->alternate_text; ?>" class="position-absolute top-0 start-0 w-100 h-100 img-thumbnail" style="object-fit: cover;" src="<?= $photo->picture_path(); ?>">
 				                    </a>
+                                    <?php if (User::isAdmin()): ?>
 				                    <div class="d-flex position-absolute top-0 end-0 mt-2 me-2">
 					                    <a class="btn btn-danger btn-sm me-1" href="delete_photo.php?id=<?= $photo->id; ?>">
 						                    <i class="bi bi-trash"></i>
@@ -29,6 +30,7 @@ require_once("includes/content-top2.php");
 						                    <i class="bi bi-eye"></i>
 					                    </a>
 				                    </div>
+                                    <?php endif; ?>
 			                    </div>
 		                    </div>
                         <?php endforeach; ?>
